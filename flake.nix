@@ -29,6 +29,7 @@
         # Why does not environment variables like C_INCLUDE_DIR work?
         # FIXME: clean up the side effect
         shellHook = with pkgs; ''
+          alias lc=leetcode
           cp --force ${dotclangd} .clangd
         '';
       };

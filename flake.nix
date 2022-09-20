@@ -2,7 +2,7 @@
   description = "cracking the coding interview";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,37 +11,41 @@
       system:
         let
           pkgs = import nixpkgs { inherit system; };
-          llvm = pkgs.llvmPackages_latest;
+          llvm = pkgs.llvmPackages_14;
           lib = nixpkgs.lib;
 
         in
           {
-            devShell = pkgs.mkShell {
-              nativeBuildInputs = [
+            devShell = llvm.stdenv.mkDerivation {
+              name = "shell";
+              buildInputs = [
                 # builder
                 # p.gnumake
                 # p.bear
-                pkgs.cmake
+                pkgs.cmake  # for discovering libraries
+                pkgs.pkg-config
+                pkgs.meson
+                pkgs.ninja
                 # debugger
-                llvm.lldb
-
-                # XXX: the order of include matters
-                pkgs.clang-tools
-                llvm.clang # clangd
+                # llvm.lldb
+                pkgs.gdb
+                pkgs.shellcheck
 
                 pkgs.gtest
+                pkgs.fmt
+                pkgs.tl-expected
+              ] ++ lib.optionals pkgs.stdenv.isLinux [ llvm.lld ]
+              ;
+              nativeBuildInputs = [
+                llvm.bintools
+                pkgs.clang-tools_14  # don't use clangd from llvm.clang
               ];
-
-              buildInputs = [
-                # stdlib for cpp
-                llvm.libcxx
-              ];
-
-              # CXXFLAGS = "-std=c++17";
-              CPATH = builtins.concatStringsSep ":" [
-                (lib.makeSearchPathOutput "dev" "include" [ llvm.libcxx ])
-                (lib.makeSearchPath "resource-root/include" [ llvm.clang ])
-              ];
+              shellHook = lib.optionalString pkgs.stdenv.isLinux ''
+                export CC_LD="lld"
+                export CXX_LD="lld"
+              '';
+              LD_LIBRARY_PATH = lib.strings.makeLibraryPath [ pkgs.fmt pkgs.gtest llvm.libcxx ];
+              LLVM_PROFILE_FILE="/tmp/test.profraw";
             };
           }
     );

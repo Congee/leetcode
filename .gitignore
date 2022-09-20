@@ -36,3 +36,6 @@
 
 # nix-direnv
 .direnv/
+
+# leetcode-cli test input
+*.tests.dat

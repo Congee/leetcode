@@ -21,7 +21,7 @@ link_args = []
 coverage_args = ['-fprofile-instr-generate', '-fcoverage-mapping']
 
 if compiler.get_id() == 'clang'
-  add_global_arguments(['-fcolor-diagnostics', '-DFMT_CONSTEVAL='], language : 'cpp')  # ninja color output
+  add_global_arguments(['-fcolor-diagnostics', '-D__LOCAL__'], language : 'cpp')  # ninja color output
   if get_option('b_coverage')
     add_global_arguments(coverage_args, language : 'cpp')  # ninja color output
     add_global_link_arguments(coverage_args, language : 'cpp')

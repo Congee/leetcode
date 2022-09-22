@@ -9,7 +9,7 @@ struct Node {
   size_t count;
 
   Node() : down(nullptr), count(1) {}
-  Node(int key, int level) : key(key), down(nullptr), count(1) {
+  Node(int key, int level) : down(nullptr), key(key), count(1) {
     forward = std::vector<Node *>(level + 1, nullptr);
   }
 };

@@ -30,11 +30,10 @@ endif
 
 
 fmt = dependency('fmt')  # it is too nice to have flake.nix
-expected = dependency('tl-expected', method : 'cmake', modules : ['tl::expected'])
 cxxabi = host_machine.system() == 'darwin' ? compiler.find_library('c++abi') : []  # required on darwin
 
 inc = [include_directories('include')]
-deps = [fmt, expected, cxxabi]
+deps = [fmt, cxxabi]
 
 src = files(
   'src/main.cpp',

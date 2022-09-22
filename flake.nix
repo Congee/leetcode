@@ -22,18 +22,18 @@
                 # builder
                 # p.gnumake
                 # p.bear
-                pkgs.cmake  # for discovering libraries
+                # pkgs.cmake  # for discovering libraries
                 pkgs.pkg-config
                 pkgs.meson
                 pkgs.ninja
                 # debugger
                 # llvm.lldb
                 pkgs.gdb
-                pkgs.shellcheck
 
                 pkgs.gtest
                 pkgs.fmt
-                pkgs.tl-expected
+
+                pkgs.leetcode-cli
               ] ++ lib.optionals pkgs.stdenv.isLinux [ llvm.lld ]
               ;
               nativeBuildInputs = [

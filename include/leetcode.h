@@ -2,6 +2,7 @@
 #ifndef LEETCODE_H
 
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <functional>
@@ -26,6 +27,7 @@ using namespace std;
 
 /// References:
 /// https://github.com/huanminwu/LeetCode/blob/ffaea4478c4dd2119fd1524a7043bcb93119c4bd/LeetCode/Leetcode.h
+
 /**
  * Definition for singly-linked list.
  */
@@ -130,6 +132,16 @@ string boolToString(bool input) { return input ? "True" : "False"; }
 bool stringToBool(string input) {
   transform(input.begin(), input.end(), input.begin(), ::tolower);
   return input == "true";
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &out, const std::vector<T> &cont) {
+  if (cont.size()) {
+    out << "[";
+    for (auto &&ele : cont) out << ele << ", ";
+    out << "]";
+  }
+  return out;
 }
 
 void prettyPrintTree(TreeNode *node, string prefix = "", bool isLeft = true) {

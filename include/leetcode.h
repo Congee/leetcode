@@ -5,6 +5,7 @@
 #include <array>
 #include <bitset>
 #include <cassert>
+#include <cfloat>  /* FLT_EPSILON */
 #include <functional>
 #include <iostream>
 #include <list>

@@ -4,7 +4,18 @@
 
 class Solution {
  public:
-  int numberOfSubstrings(const std::string& s) {
+  int numberOfSubstrings(const std::string& s) { return genius(s); }
+
+  int genius(const std::string& s) {
+    int last[] = {-1, -1, -1}, count = 0, n = s.size();
+    for (int i = 0; i < n; ++i) {
+      last[s[i] - 'a'] = i;
+      count += 1 + std::min({last[0], last[1], last[2]});
+    }
+    return count;
+  }
+
+  int regular(const std::string& s) {
     // aaacb
     int count = 0, map[] = {0, 0, 0};
 

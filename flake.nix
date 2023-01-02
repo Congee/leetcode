@@ -10,37 +10,45 @@
     flake-utils.lib.eachDefaultSystem (
       system:
         let
-          pkgs = import nixpkgs { inherit system; };
-          llvm = pkgs.llvmPackages_14;
+          pkgs = import nixpkgs {
+            inherit system;
+            # XXX: There is no easy way to avoid libstdc++ include files. See
+            # https://discourse.nixos.org/t/use-clang-without-gccs-c-standard-library/9884
+            # https://discourse.nixos.org/t/how-to-override-stdenv-for-all-packages-in-mkshell/10368/10
+            # https://discourse.nixos.org/t/gcc11stdenv-and-clang/17734
+            # overlays = [ (_: super: { stdenvNoCC = super.llvmPackages_latest.libcxxStdenv; }) ];
+            config.replaceStdenv = { pkgs, ...}: (if pkgs.stdenv.isLinux then pkgs.llvmPackages_latest else pkgs).stdenv;
+          };
+
+          llvm = (if pkgs.stdenv.isLinux then pkgs.pkgsLLVM else pkgs).llvmPackages_latest;
           lib = nixpkgs.lib;
 
         in
           {
             devShell = llvm.stdenv.mkDerivation {
               name = "shell";
-              buildInputs = [
+              nativeBuildInputs = [
                 # builder
                 # p.gnumake
                 # p.bear
-                # pkgs.cmake  # for discovering libraries
+                pkgs.cmake  # for discovering libraries
                 pkgs.pkg-config
                 pkgs.meson
                 pkgs.ninja
                 # debugger
                 # llvm.lldb
-                pkgs.gdb
+                # pkgs.gdb
 
                 pkgs.gtest
                 pkgs.fmt
 
                 pkgs.leetcode-cli
-              ] ++ lib.optionals pkgs.stdenv.isLinux [ llvm.lld ]
-              ;
-              nativeBuildInputs = [
+
                 llvm.bintools
                 pkgs.clang-tools_14  # don't use clangd from llvm.clang
-              ];
-              shellHook = lib.optionalString pkgs.stdenv.isLinux ''
+              ] ++ lib.optionals llvm.stdenv.isLinux [ llvm.lld ]
+              ;
+              shellHook = lib.optionalString llvm.stdenv.isLinux ''
                 export CC_LD="lld"
                 export CXX_LD="lld"
               '';

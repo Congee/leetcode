@@ -22,6 +22,8 @@ coverage_args = ['-fprofile-instr-generate', '-fcoverage-mapping']
 
 if compiler.get_id() == 'clang'
   add_global_arguments(['-fcolor-diagnostics', '-D__LOCAL__'], language : 'cpp')  # ninja color output
+  # meson defaults to libstdc++: https://github.com/mesonbuild/meson/issues/8592
+  add_global_link_arguments(['-stdlib=libc++'], language : 'cpp')
   if get_option('b_coverage')
     add_global_arguments(coverage_args, language : 'cpp')  # ninja color output
     add_global_link_arguments(coverage_args, language : 'cpp')
@@ -29,11 +31,10 @@ if compiler.get_id() == 'clang'
 endif
 
 
-fmt = dependency('fmt')  # it is too nice to have flake.nix
 cxxabi = host_machine.system() == 'darwin' ? compiler.find_library('c++abi') : []  # required on darwin
 
 inc = [include_directories('include')]
-deps = [fmt, cxxabi]
+deps = [cxxabi]
 
 src = files(
   'src/main.cpp',

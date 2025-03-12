@@ -2,7 +2,7 @@
   description = "cracking the coding interview";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -45,7 +45,10 @@
                 pkgs.leetcode-cli
 
                 llvm.bintools
-                pkgs.clang-tools_14  # don't use clangd from llvm.clang
+                # Don't use clangd from llvm.clang. It cannot find libcxx's
+                # include/c++/v1 despite listing it in search paths
+                # clang++ -E -x c++ - -v < /dev/null >/dev/null
+                llvm.clang-tools
               ] ++ lib.optionals llvm.stdenv.isLinux [ llvm.lld ]
               ;
               shellHook = lib.optionalString llvm.stdenv.isLinux ''
